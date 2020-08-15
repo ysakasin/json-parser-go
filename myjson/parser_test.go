@@ -59,6 +59,42 @@ func TestArray(t *testing.T) {
 	assertParseError(t, "[123,]")
 }
 
+func TestObject(t *testing.T) {
+	assertParse(t, map[string]interface{}{}, "{}")
+	assertParse(
+		t,
+		map[string]interface{}{"No.001": "Okabe Rintaro", "No.004": "Makise Kurisu"},
+		`{ "No.001" : "Okabe Rintaro", "No.004" : "Makise Kurisu" }`,
+	)
+	assertParse(
+		t,
+		map[string]interface{}{
+			"number int":   123,
+			"number float": 3.14,
+			"string":       "Makise Kurisu",
+			"array":        []interface{}{333, 444},
+			"true":         true,
+			"false":        false,
+			"null":         nil,
+			"object":       map[string]interface{}{"C204": "Time Machine"},
+		},
+		`{
+			"number int": 123,
+			"number float":3.14,
+			"string": "Makise Kurisu",
+			"array": [333, 444],
+			"true": true,
+			"false": false,
+			"null": null,
+			"object": {"C204": "Time Machine"}
+		}`,
+	)
+
+	assertParseError(t, "{123,}")
+	assertParseError(t, `{123: "key should be string"}`)
+	assertParseError(t, `{true: "key should be string"}`)
+}
+
 func assertParse(t *testing.T, expected interface{}, json string) {
 	t.Helper()
 
