@@ -28,6 +28,30 @@ func TestNumber(t *testing.T) {
 	assertParseError(t, "3.14e-")
 }
 
+func TestString(t *testing.T) {
+	assertParse(t, "Future Gadget Laboratory", `"Future Gadget Laboratory"`)
+	assertParse(t, "", `""`)
+	assertParse(t, "Time\n\r\t\b\\/Leap", `"Time\n\r\t\b\\\/Leap"`)
+	assertParse(t, "\\n", `"\\n"`)
+	assertParse(t, "Time \u23F1", `"Time \u23F1"`)
+	assertParse(t, "Phone \u260E", `"Phone \u260e"`)
+
+	assertParseError(
+		t,
+		`
+		"Beta World Line
+		Alpha World Line"
+		`,
+	)
+	assertParseError(t, `"John`)
+	assertParseError(t, `'John Titor'`)
+	assertParseError(t, `"\uGGGG"`)
+	assertParseError(t, `"\u123"`)
+	assertParseError(t, `"\u"`)
+	assertParseError(t, `"\a"`)
+	assertParseError(t, `"\ n"`)
+}
+
 func TestLiteral(t *testing.T) {
 	assertParse(t, true, "true")
 	assertParse(t, false, "false")
