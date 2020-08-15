@@ -25,7 +25,13 @@ type parser struct {
 }
 
 func (p *parser) json() (interface{}, error) {
-	return p.element()
+	value, err := p.element()
+
+	if p.index != p.srcLen {
+		return nil, errors.New("source is still continuing")
+	}
+
+	return value, err
 }
 
 func (p *parser) element() (value interface{}, err error) {
@@ -296,7 +302,8 @@ func (p *parser) number() (interface{}, error) {
 	number_literal := string(p.src[begin:end])
 
 	if end_integer == end {
-		return strconv.ParseInt(number_literal, 10, 64)
+		i64, err := strconv.ParseInt(number_literal, 10, 32)
+		return int(i64), err
 	} else {
 		return strconv.ParseFloat(number_literal, 64)
 	}
@@ -317,7 +324,8 @@ func (p *parser) integer() error {
 
 func (p *parser) digits() error {
 	if !is_digit(p.current()) {
-		return errors.New("expect digit")
+		msg := fmt.Sprintf("expected digit, but %q", p.current())
+		return errors.New(msg)
 	}
 
 	p.next()
@@ -342,6 +350,7 @@ func (p *parser) exponent() error {
 	cur := p.current()
 	if cur == 'E' || cur == 'e' {
 		p.next()
+		p.sign()
 		return p.digits()
 	}
 
