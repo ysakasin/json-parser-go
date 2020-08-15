@@ -144,7 +144,7 @@ func (p *parser) array() (arr []interface{}, err error) {
 
 	p.skip_white_space()
 
-	if p.current() == ']' {
+	if p.consumeRune(']') {
 		arr = make([]interface{}, 0)
 		return
 	}
