@@ -36,6 +36,11 @@ func TestString(t *testing.T) {
 	assertParse(t, "Time \u23F1", `"Time \u23F1"`)
 	assertParse(t, "Phone \u260E", `"Phone \u260e"`)
 
+	assertParse(t, `/`, `"/"`)
+	assertParse(t, `/`, `"\/"`)
+	assertParse(t, `/`, `"\u002F"`)
+	assertParse(t, `/`, `"\u002f"`)
+
 	assertParseError(
 		t,
 		`
