@@ -55,6 +55,8 @@ func TestArray(t *testing.T) {
 		},
 		`[123, 3.14, "Makise Kurisu", [333, 444], true, false, null, {"C204" : "Time Machine"}]`,
 	)
+
+	assertParseError(t, "[123,]")
 }
 
 func assertParse(t *testing.T, expected interface{}, json string) {
