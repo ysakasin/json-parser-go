@@ -38,6 +38,25 @@ func TestLiteral(t *testing.T) {
 	assertParseError(t, "nil")
 }
 
+func TestArray(t *testing.T) {
+	assertParse(t, []interface{}{}, "[]")
+	assertParse(t, []interface{}{123, 456, 789}, "[123, 456, 789]")
+	assertParse(
+		t,
+		[]interface{}{
+			123,
+			3.14,
+			"Makise Kurisu",
+			[]interface{}{333, 444},
+			true,
+			false,
+			nil,
+			map[string]interface{}{"C204": "Time Machine"},
+		},
+		`[123, 3.14, "Makise Kurisu", [333, 444], true, false, null, {"C204" : "Time Machine"}]`,
+	)
+}
+
 func assertParse(t *testing.T, expected interface{}, json string) {
 	t.Helper()
 
