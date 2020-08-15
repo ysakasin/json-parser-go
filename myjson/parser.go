@@ -225,14 +225,19 @@ func (p *parser) character() (rune, error) {
 	return cur, nil
 }
 
-func (p *parser) escape() (r rune, err error) {
+func (p *parser) escape() (rune, error) {
+	var r rune
+
 	switch p.current() {
+	case 'u':
+		p.next()
+		return p.codePoint()
 	case '"':
 		r = 0x0022 // \" quotation mark
 	case '\\':
 		r = 0x005C // \\ reverse solidus
 	case '/':
-		r = 0x003F // \/ solidus
+		r = 0x002F // \/ solidus
 	case 'b':
 		r = 0x0008 // \b backspace
 	case 'f':
@@ -243,14 +248,13 @@ func (p *parser) escape() (r rune, err error) {
 		r = 0x000D // \r carriage return
 	case 't':
 		r = 0x0009 // \t character tabulation
-	case 'u':
-		p.next()
-		r, err = p.codePoint()
 	default:
-		err = errors.New("unexpected escape")
+		return 0, errors.New("unexpected escape")
 	}
 
-	return
+	p.next()
+
+	return r, nil
 }
 
 func (p *parser) codePoint() (rune, error) {
