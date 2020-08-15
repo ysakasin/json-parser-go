@@ -28,6 +28,16 @@ func TestNumber(t *testing.T) {
 	assertParseError(t, "3.14e-")
 }
 
+func TestLiteral(t *testing.T) {
+	assertParse(t, true, "true")
+	assertParse(t, false, "false")
+	assertParse(t, nil, "null")
+
+	assertParseError(t, "True")
+	assertParseError(t, "False")
+	assertParseError(t, "nil")
+}
+
 func assertParse(t *testing.T, expected interface{}, json string) {
 	t.Helper()
 
