@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// Parse json
 func Parse(src string) (interface{}, error) {
 	srcRunes := []rune(src)
 
@@ -35,9 +36,9 @@ func (p *parser) json() (interface{}, error) {
 }
 
 func (p *parser) element() (value interface{}, err error) {
-	p.skip_white_space()
+	p.skipWhiteSpace()
 	value, err = p.value()
-	p.skip_white_space()
+	p.skipWhiteSpace()
 
 	return
 }
@@ -75,7 +76,7 @@ func (p *parser) object() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	p.skip_white_space()
+	p.skipWhiteSpace()
 
 	if p.consumeRune('}') {
 		return make(map[string]interface{}), nil
@@ -116,14 +117,14 @@ func (p *parser) members() (map[string]interface{}, error) {
 }
 
 func (p *parser) member() (string, interface{}, error) {
-	p.skip_white_space()
+	p.skipWhiteSpace()
 
 	key, err := p.string()
 	if err != nil {
 		return "", nil, err
 	}
 
-	p.skip_white_space()
+	p.skipWhiteSpace()
 
 	if err := p.expectRune(':'); err != nil {
 		return "", nil, err
@@ -142,7 +143,7 @@ func (p *parser) array() (arr []interface{}, err error) {
 		return nil, err
 	}
 
-	p.skip_white_space()
+	p.skipWhiteSpace()
 
 	if p.consumeRune(']') {
 		arr = make([]interface{}, 0)
@@ -293,7 +294,7 @@ func (p *parser) number() (interface{}, error) {
 		return nil, err
 	}
 
-	end_integer := p.index
+	endInteger := p.index
 
 	if err := p.fraction(); err != nil {
 		return nil, err
@@ -303,14 +304,14 @@ func (p *parser) number() (interface{}, error) {
 	}
 
 	end := p.index
-	number_literal := string(p.src[begin:end])
+	numberLiteral := string(p.src[begin:end])
 
-	if end_integer == end {
-		i64, err := strconv.ParseInt(number_literal, 10, 32)
+	if endInteger == end {
+		i64, err := strconv.ParseInt(numberLiteral, 10, 32)
 		return int(i64), err
-	} else {
-		return strconv.ParseFloat(number_literal, 64)
 	}
+
+	return strconv.ParseFloat(numberLiteral, 64)
 }
 
 func (p *parser) integer() error {
@@ -327,14 +328,14 @@ func (p *parser) integer() error {
 }
 
 func (p *parser) digits() error {
-	if !is_digit(p.current()) {
+	if !isDigit(p.current()) {
 		msg := fmt.Sprintf("expected digit, but %q", p.current())
 		return errors.New(msg)
 	}
 
 	p.next()
 
-	for is_digit(p.current()) {
+	for isDigit(p.current()) {
 		p.next()
 	}
 
@@ -368,8 +369,8 @@ func (p *parser) sign() {
 	}
 }
 
-func (p *parser) skip_white_space() {
-	for is_white_space(p.current()) {
+func (p *parser) skipWhiteSpace() {
+	for isWhiteSpace(p.current()) {
 		p.next()
 	}
 }
@@ -418,22 +419,22 @@ func (p *parser) current() rune {
 
 func (p *parser) next() {
 	if p.index < p.srcLen {
-		p.index += 1
+		p.index++
 	}
 }
 
-func is_white_space(r rune) bool {
+func isWhiteSpace(r rune) bool {
 	return r == ' ' || r == '\n' || r == '\r' || r == '\t'
 }
 
-func is_digit(r rune) bool {
+func isDigit(r rune) bool {
 	return '0' <= r && r <= '9'
 }
 
-func is_onenine(r rune) bool {
+func isOnenine(r rune) bool {
 	return '1' <= r && r <= '9'
 }
 
 func isHex(r rune) bool {
-	return is_digit(r) || ('a' <= r && r <= 'f') || ('A' <= r && r <= 'F')
+	return isDigit(r) || ('a' <= r && r <= 'f') || ('A' <= r && r <= 'F')
 }
